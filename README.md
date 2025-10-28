@@ -2,25 +2,25 @@
 
 Sistem sinkronisasi terdistribusi yang mengimplementasikan algoritma consensus, distributed locking, queue management, dan cache coherence untuk skenario real-world distributed systems.
 
-## 🚀 Features
+## Features
 
 ### Core Components
 
-- **🔒 Distributed Lock Manager** - Implementasi distributed lock menggunakan Raft Consensus Algorithm
-- **📬 Distributed Queue System** - Sistem queue terdistribusi dengan Redis dan consistent hashing
-- **💾 Cache Coherence** - Implementasi MESI protocol untuk cache coherence
-- **📊 Performance Monitoring** - Metrics collection dan monitoring dengan Prometheus format
-- **🐳 Containerization** - Docker containerization dengan orchestration support
+- **Distributed Lock Manager** - Implementasi distributed lock menggunakan Raft Consensus Algorithm
+- **Distributed Queue System** - Sistem queue terdistribusi dengan Redis dan consistent hashing
+- **Cache Coherence** - Implementasi MESI protocol untuk cache coherence
+- **Performance Monitoring** - Metrics collection dan monitoring dengan Prometheus format
+- **Containerization** - Docker containerization dengan orchestration support
 
 ### Advanced Features
 
-- **🔄 Raft Consensus** - Leader election dan log replication
-- **🚫 Deadlock Detection** - Automatic deadlock detection dan resolution
-- **📈 Load Testing** - Comprehensive load testing dengan Locust
-- **📚 API Documentation** - Complete OpenAPI/Swagger specification
-- **🧪 Test Suite** - Comprehensive test coverage dengan unit, integration, dan performance tests
+- **Raft Consensus** - Leader election dan log replication
+- **Deadlock Detection** - Automatic deadlock detection dan resolution
+- **Load Testing** - Comprehensive load testing dengan Locust
+- **API Documentation** - Complete OpenAPI/Swagger specification
+- **Test Suite** - Comprehensive test coverage dengan unit, integration, dan performance tests
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -55,7 +55,7 @@ Sistem sinkronisasi terdistribusi yang mengimplementasikan algoritma consensus, 
                     └─────────────────┘
 ```
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Python 3.8+** dengan asyncio untuk asynchronous programming
 - **Redis 7.0+** untuk distributed state management
@@ -65,7 +65,7 @@ Sistem sinkronisasi terdistribusi yang mengimplementasikan algoritma consensus, 
 - **pytest** untuk testing framework
 - **Prometheus** format untuk metrics
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -105,7 +105,7 @@ bash scripts/run_tests.sh
 bash scripts/run_load_tests.sh
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -130,7 +130,7 @@ HEARTBEAT_INTERVAL=1.0
 HEARTBEAT_TIMEOUT=3.0
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Health & Status
 - `GET /health` - Health check
@@ -158,7 +158,7 @@ HEARTBEAT_TIMEOUT=3.0
 - `GET /cache/fetch` - Fetch from peer
 - `GET /cache/state` - Cache state and metrics
 
-## 🧪 Testing
+## Testing
 
 ### Test Suite
 
@@ -191,7 +191,7 @@ locust -f benchmarks/load_test_scenarios.py --host=http://localhost:8001 --users
 - **Performance Tests**: Load dan stress testing
 - **Cache Coherence Tests**: MESI protocol testing
 
-## 📊 Performance Monitoring
+## Performance Monitoring
 
 ### Metrics Available
 
@@ -214,7 +214,7 @@ curl http://localhost:8001/metrics?format=prometheus
 curl http://localhost:8001/cache/state
 ```
 
-## 🐳 Docker Deployment
+## Docker Deployment
 
 ### Production Deployment
 
@@ -242,7 +242,7 @@ docker compose -f docker/docker-compose.yml restart node1
 docker compose -f docker/docker-compose.yml up -d --scale node1=3
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -287,7 +287,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - **[Deployment Guide](docs/deployment_guide.md)** - Detailed deployment dan troubleshooting guide
 - **[Architecture Overview](docs/architecture.md)** - System architecture documentation
 
-## 🎯 Use Cases
+## Use Cases
 
 ### Distributed Lock Manager
 - Database transaction coordination
@@ -304,7 +304,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - Data consistency
 - Performance optimization
 
-## 🚀 Performance Characteristics
+## Performance Characteristics
 
 ### Benchmarks
 - **Lock Operations**: < 10ms latency
@@ -325,26 +325,13 @@ docker compose -f docker/docker-compose.yml logs -f
 4. Ensure all tests pass
 5. Submit pull request
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file untuk details.
 
-## 🆘 Support
+## Support
 
 Untuk bantuan dan pertanyaan:
 - Dokumentasi: `docs/`
 - Issues: GitHub Issues
 - Logs: `logs/` directory
-
-## 🎓 Educational Value
-
-Proyek ini mengimplementasikan konsep-konsep penting dalam distributed systems:
-
-- **Consensus Algorithms** (Raft)
-- **Distributed Locking**
-- **Cache Coherence Protocols** (MESI)
-- **Message Passing**
-- **Fault Tolerance**
-- **Performance Monitoring**
-
-Sangat cocok untuk pembelajaran dan penelitian dalam bidang distributed systems.
