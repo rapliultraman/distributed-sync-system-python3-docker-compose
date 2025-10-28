@@ -1,0 +1,5 @@
+[SIMULATED RUN LOG]
+node1 became leader (term 1)
+node2 applied log index 0
+node3 applied log index 0
+client acquire lock resA -> leader appended entry index 0

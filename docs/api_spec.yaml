@@ -1,0 +1,536 @@
+openapi: 3.0.3
+info:
+  title: Distributed Sync System API
+  description: |
+    API untuk sistem sinkronisasi terdistribusi yang mengimplementasikan:
+    - Distributed Lock Manager dengan Raft Consensus
+    - Distributed Queue System dengan Redis
+    - Cache Coherence dengan MESI Protocol
+    - Performance Monitoring dan Metrics
+  version: 1.0.0
+  contact:
+    name: Distributed Sync System
+    email: support@distributed-sync.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8001
+    description: Node 1
+  - url: http://localhost:8002
+    description: Node 2
+  - url: http://localhost:8003
+    description: Node 3
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Menampilkan status kesehatan node
+      responses:
+        '200':
+          description: Node sehat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  node_id:
+                    type: string
+                    example: "node1"
+                  leader:
+                    type: string
+                    example: "node1"
+                  term:
+                    type: integer
+                    example: 1
+
+  /raft/leader:
+    get:
+      summary: Get Raft Leader
+      description: Mendapatkan informasi leader saat ini
+      responses:
+        '200':
+          description: Informasi leader
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leader:
+                    type: string
+                    example: "node1"
+                  term:
+                    type: integer
+                    example: 1
+
+  /raft/heartbeat:
+    post:
+      summary: Send Heartbeat
+      description: Mengirim heartbeat untuk leader election
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                leader:
+                  type: string
+                  example: "node1"
+                term:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Heartbeat diterima
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /raft/append:
+    post:
+      summary: Append Command to Log
+      description: Menambahkan command ke Raft log (hanya leader)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "acquire"
+                resource:
+                  type: string
+                  example: "resource1"
+                owner:
+                  type: string
+                  example: "client1"
+                mode:
+                  type: string
+                  enum: [shared, exclusive]
+                  example: "shared"
+      responses:
+        '200':
+          description: Command berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  index:
+                    type: integer
+                    example: 0
+        '403':
+          description: Bukan leader
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "not leader"
+
+  /raft/log:
+    get:
+      summary: Get Raft Log
+      description: Mendapatkan log entries dari Raft
+      parameters:
+        - name: start
+          in: query
+          description: Index mulai
+          schema:
+            type: integer
+            default: 0
+        - name: end
+          in: query
+          description: Index akhir (-1 untuk semua)
+          schema:
+            type: integer
+            default: -1
+      responses:
+        '200':
+          description: Log entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  log:
+                    type: array
+                    items:
+                      type: string
+
+  /locks/acquire:
+    post:
+      summary: Acquire Lock
+      description: Mengambil lock untuk resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - resource
+              properties:
+                resource:
+                  type: string
+                  example: "resource1"
+                owner:
+                  type: string
+                  example: "client1"
+                mode:
+                  type: string
+                  enum: [shared, exclusive]
+                  default: shared
+                  example: "shared"
+      responses:
+        '200':
+          description: Lock berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /locks/release:
+    post:
+      summary: Release Lock
+      description: Melepaskan lock untuk resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - resource
+              properties:
+                resource:
+                  type: string
+                  example: "resource1"
+                owner:
+                  type: string
+                  example: "client1"
+      responses:
+        '200':
+          description: Lock berhasil dilepas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /locks/wait_for:
+    get:
+      summary: Get Wait-for Graph
+      description: Mendapatkan wait-for graph untuk deadlock detection
+      responses:
+        '200':
+          description: Wait-for edges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edges:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+                      example: ["client1", "client2"]
+
+  /queue/produce:
+    post:
+      summary: Produce Message
+      description: Menambahkan message ke queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - topic
+                - message
+              properties:
+                topic:
+                  type: string
+                  example: "orders"
+                message:
+                  type: string
+                  example: "order_123"
+      responses:
+        '200':
+          description: Message berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /queue/consume:
+    post:
+      summary: Consume Message
+      description: Mengambil message dari queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - topic
+              properties:
+                topic:
+                  type: string
+                  example: "orders"
+      responses:
+        '200':
+          description: Message berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "order_123"
+
+  /cache/get:
+    get:
+      summary: Get Cache Value
+      description: Mendapatkan value dari cache
+      parameters:
+        - name: key
+          in: query
+          required: true
+          description: Cache key
+          schema:
+            type: string
+            example: "user:123"
+      responses:
+        '200':
+          description: Cache value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    example: "john_doe"
+
+  /cache/put:
+    post:
+      summary: Put Cache Value
+      description: Menyimpan value ke cache
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - key
+                - value
+              properties:
+                key:
+                  type: string
+                  example: "user:123"
+                value:
+                  type: string
+                  example: "john_doe"
+      responses:
+        '200':
+          description: Value berhasil disimpan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /cache/invalidate:
+    post:
+      summary: Invalidate Cache
+      description: Menandai cache key sebagai invalid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - key
+              properties:
+                key:
+                  type: string
+                  example: "user:123"
+      responses:
+        '200':
+          description: Cache berhasil di-invalidate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /cache/fetch:
+    get:
+      summary: Fetch from Cache
+      description: Mengambil value dari cache untuk peer nodes
+      parameters:
+        - name: key
+          in: query
+          required: true
+          description: Cache key
+          schema:
+            type: string
+            example: "user:123"
+      responses:
+        '200':
+          description: Cache value dan state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    example: "john_doe"
+                  state:
+                    type: string
+                    enum: [M, E, S, I]
+                    example: "S"
+
+  /cache/state:
+    get:
+      summary: Get Cache State
+      description: Mendapatkan state cache untuk monitoring
+      responses:
+        '200':
+          description: Cache state dan metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cache_state:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        state:
+                          type: string
+                          enum: [M, E, S, I]
+                        age:
+                          type: number
+                  metrics:
+                    type: object
+                    properties:
+                      hits:
+                        type: integer
+                      misses:
+                        type: integer
+                      invalidations_sent:
+                        type: integer
+                      invalidations_received:
+                        type: integer
+                      state_transitions:
+                        type: integer
+                  capacity_used:
+                    type: integer
+                  capacity_total:
+                    type: integer
+
+  /metrics:
+    get:
+      summary: Get Metrics
+      description: Mendapatkan metrics dalam format Prometheus atau JSON
+      parameters:
+        - name: format
+          in: query
+          description: Format output
+          schema:
+            type: string
+            enum: [json, prometheus]
+            default: json
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  node_id:
+                    type: string
+                  uptime_seconds:
+                    type: number
+                  counters:
+                    type: object
+                  gauges:
+                    type: object
+                  histograms:
+                    type: object
+            text/plain:
+              schema:
+                type: string
+                description: Prometheus format metrics
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+      required:
+        - error
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Raft
+    description: Raft consensus protocol endpoints
+  - name: Locks
+    description: Distributed lock management
+  - name: Queue
+    description: Distributed queue system
+  - name: Cache
+    description: Cache coherence with MESI protocol
+  - name: Metrics
+    description: Performance monitoring and metrics

@@ -1,0 +1,20 @@
+from aiohttp import web
+from src.api.handlers import Handlers
+async def register_routes(app):
+    h = Handlers(app)
+    app.router.add_get('/health', h.health)
+    app.router.add_get('/raft/leader', h.leader)
+    app.router.add_post('/raft/heartbeat', h.heartbeat)
+    app.router.add_post('/raft/append', h.append)
+    app.router.add_get('/raft/log', h.get_log)
+    app.router.add_post('/locks/acquire', h.acquire_lock)
+    app.router.add_post('/locks/release', h.release_lock)
+    app.router.add_get('/locks/wait_for', h.wait_for)
+    app.router.add_post('/queue/produce', h.produce)
+    app.router.add_post('/queue/consume', h.consume)
+    app.router.add_get('/cache/get', h.cache_get)
+    app.router.add_post('/cache/put', h.cache_put)
+    app.router.add_post('/cache/invalidate', h.cache_invalidate)
+    app.router.add_get('/cache/fetch', h.cache_fetch)
+    app.router.add_get('/cache/state', h.cache_state)
+    app.router.add_get('/metrics', h.metrics)

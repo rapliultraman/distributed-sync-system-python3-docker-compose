@@ -1,0 +1,54 @@
+services:
+  node1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.node
+    env_file:
+      - ../.env
+    environment:
+      NODE_ID: node1
+      PEERS: node2,node3
+      HTTP_PORT: 8000
+      DOCKER_ENV: "1"
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
+
+  node2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.node
+    env_file:
+      - ../.env
+    environment:
+      NODE_ID: node2
+      PEERS: node1,node3
+      HTTP_PORT: 8000
+      DOCKER_ENV: "1"
+    ports:
+      - "8002:8000"
+    depends_on:
+      - redis
+
+  node3:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.node
+    env_file:
+      - ../.env
+    environment:
+      NODE_ID: node3
+      PEERS: node1,node2
+      HTTP_PORT: 8000
+      DOCKER_ENV: "1"
+    ports:
+      - "8003:8000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "60", "1"]
