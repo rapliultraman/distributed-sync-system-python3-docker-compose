@@ -1,7 +1,7 @@
 # Laporan Implementasi Distributed Synchronization System
 
 ## Identitas
-- **Nama**: Sistem Parallel dan Terdistribusi
+- **Nama**: Rafli Pratama Yuliandi
 - **NIM**: 11221090
 - **Mata Kuliah**: Sistem Parallel dan Terdistribusi
 - **Judul Tugas**: Implementasi Distributed Synchronization System(Tugas 2)
